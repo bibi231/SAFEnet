@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero">
+    <h1>Secure. Anonymous. Safe.</h1>
+    <p class="lead">A secure platform for anonymous emergency reporting and crisis response in Nigeria.</p>
+    <div class="cta-buttons">
+        <a href="{{ url_for('report_incident') }}" class="btn btn-primary">Report an Incident Anonymously</a>
+        <a href="{{ url_for('directory') }}" class="btn btn-secondary">Find Help Near You</a>
+    </div>
+</div>
+
+<div class="features">
+    <div class="feature-card">
+        <h3>Anonymous Reporting</h3>
+        <p>Your identity is protected. We do not collect personal information when you submit a report.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Verified Support</h3>
+        <p>Connect with verified NGOs, hospitals, and legal aid providers in the FCT.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Secure Platform</h3>
+        <p>Built with end-to-end encryption and privacy-by-design principles compliant with NDPA 2023.</p>
+    </div>
+</div>
+{% endblock %}

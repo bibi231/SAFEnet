@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="directory-header">
+    <h2>Verified Service Directory</h2>
+    <p>Find trusted help and support services in the FCT.</p>
+</div>
+
+<div class="directory-grid">
+    {% if providers %}
+        {% for provider in providers %}
+        <div class="provider-card">
+            <div class="provider-header">
+                <h3>{{ provider.name }}</h3>
+                <span class="badge badge-{{ provider.category|lower }}">{{ provider.category }}</span>
+            </div>
+            <div class="provider-body">
+                <p class="provider-desc">{{ provider.description }}</p>
+                <div class="provider-contact">
+                    <p><strong>Address:</strong> {{ provider.address }}</p>
+                    <p><strong>Phone:</strong> <a href="tel:{{ provider.contact_phone }}">{{ provider.contact_phone }}</a></p>
+                    <p><strong>Email:</strong> <a href="mailto:{{ provider.contact_email }}">{{ provider.contact_email }}</a></p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-results">
+            <p>No verified service providers found at this time. Please check back later.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

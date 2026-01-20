@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h2>Admin Dashboard</h2>
+        <p>Welcome, {{ current_user.username }}</p>
+    </div>
+
+    <div class="dashboard-section">
+        <h3>Recent Incident Reports</h3>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Tracking ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in reports %}
+                    <tr>
+                        <td>{{ report.incident_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ report.category }}</td>
+                        <td>{{ report.location }}</td>
+                        <td><span class="status-badge status-{{ report.status|lower }}">{{ report.status }}</span></td>
+                        <td><span class="tracking-id">{{ report.tracking_id }}</span></td>
+                        <td>
+                            {% if report.status == 'Pending' %}
+                            <form method="POST" action="{{ url_for('assign_report', report_id=report.id) }}" class="d-inline">
+                                <select name="provider_id" class="form-select form-select-sm" required>
+                                    <option value="">Assign to Provider</option>
+                                    {% for provider in providers %}
+                                        {% if provider.is_verified %}
+                                        <option value="{{ provider.id }}">{{ provider.name }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-primary">Assign</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="dashboard-section">
+        <h3>Registered Service Providers</h3>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Contact</th>
+                        <th>Verified</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for provider in providers %}
+                    <tr>
+                        <td>{{ provider.name }}</td>
+                        <td>{{ provider.category }}</td>
+                        <td>{{ provider.contact_email }}</td>
+                        <td>
+                            {% if provider.is_verified %}
+                                <span class="status-badge status-verified">Verified</span>
+                            {% else %}
+                                <span class="status-badge status-pending">Pending</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
