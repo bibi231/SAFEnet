@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-bg-shape"></div>
+    <div class="container" style="position: relative; width: 100%;">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-shield-alt" style="color: var(--accent-color);"></i>
+                <span>Trusted by 10,000+ Nigerians</span>
+            </div>
+            
+            <h1>
+                Secure. Anonymous.<br>
+                <span style="color: var(--accent-color);">Safe.</span>
+            </h1>
+            
+            <p>
+                A secure platform for anonymous emergency reporting and crisis response in Abuja, Nigeria. Your voice matters, your safety is paramount.
+            </p>
+            
+            <div class="hero-btns">
+                <a href="{{ url_for('report') }}" class="btn-lg btn-primary">
+                    <i class="fas fa-exclamation-triangle"></i> Report Incident
+                </a>
+                <a href="{{ url_for('directory') }}" class="btn-lg btn-outline">
+                    <i class="fas fa-search"></i> Find Help
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <div class="floating-card card-1">
+                <i class="fas fa-user-secret" style="font-size: 2rem; color: #60a5fa; margin-bottom: 1rem;"></i>
+                <h4>100% Anonymous</h4>
+                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 0;">No IP logging or personal data collection.</p>
+            </div>
+            
+            <div class="floating-card card-2">
+                <i class="fas fa-clock" style="font-size: 2rem; color: #34d399; margin-bottom: 1rem;"></i>
+                <h4>24/7 Response</h4>
+                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 0;">Always active monitoring and rapid response.</p>
+            </div>
+            
+            <div class="floating-card card-3">
+                <i class="fas fa-check-circle" style="font-size: 2rem; color: #fbbf24; margin-bottom: 1rem;"></i>
+                <h4>Verified</h4>
+                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 0;">Trusted NGOs & Partners.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number">500+</span>
+                <span class="stat-label">Reports Processed</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">50+</span>
+                <span class="stat-label">Verified Partners</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">10k+</span>
+                <span class="stat-label">Lives Impacted</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">100%</span>
+                <span class="stat-label">Privacy Protected</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Why Choose SAFEnet?</h2>
+            <p>Comprehensive support for victims of gender-based violence and emergencies in the FCT.</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h3>Anonymous Reporting</h3>
+                <p>Submit incident reports without revealing your identity. We never collect names, phone numbers, or IP addresses unless you choose to share.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-hand-holding-heart"></i>
+                </div>
+                <h3>Verified Support</h3>
+                <p>Access our directory of vetted NGOs, hospitals, legal aid clinics, and emergency services ready to assist you.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3>Secure Platform</h3>
+                <p>Enterprise-grade encryption and privacy-by-design architecture ensuring your data remains confidential and secure.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3>Rapid Response</h3>
+                <p>Our automated system instantly routes reports to the nearest appropriate response partners for immediate action.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-balance-scale"></i>
+                </div>
+                <h3>Legal Guidance</h3>
+                <p>Connect with pro-bono legal experts who can guide you through the justice system and protect your rights.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-users-cog"></i>
+                </div>
+                <h3>Case Management</h3>
+                <p>Track the progress of your case with a unique anonymous tracking ID without ever creating an account.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section style="padding: 5rem 0; background: #fff; text-align: center;">
+    <div class="container">
+        <div class="glass-card" style="padding: 4rem 2rem; background: linear-gradient(135deg, rgba(124, 102, 234, 0.1), rgba(255, 255, 255, 0.5)); border: 1px solid rgba(124, 102, 234, 0.2);">
+            <h2 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary-dark);">Ready to Get Help?</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem; color: var(--text-secondary); max-width: 600px; margin-left: auto; margin-right: auto;">
+                You don't have to face this alone. Reach out now for confidential support and professional assistance.
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="{{ url_for('report') }}" class="nav-btn" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                    Start Report Now
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

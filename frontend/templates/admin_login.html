@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login - SAFEnet{% endblock %}
+
+{% block content %}
+<div class="form-container" style="margin-top: 3rem;">
+    <div class="form-header">
+        <div class="feature-icon" style="margin: 0 auto 1rem;">
+            <i class="fas fa-user-shield"></i>
+        </div>
+        <h2>Administrator Login</h2>
+        <p style="color: var(--text-secondary);">
+            <i class="fas fa-lock"></i> Secure access for system administrators
+        </p>
+    </div>
+    
+    <form method="POST" action="{{ url_for('admin_login') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        
+        <div class="form-group">
+            <label for="username">
+                <i class="fas fa-user"></i> Username
+            </label>
+            <input type="text" name="username" id="username" class="form-control" 
+                   placeholder="Enter admin username" required autofocus>
+        </div>
+
+        <div class="form-group">
+            <label for="password">
+                <i class="fas fa-key"></i> Password
+            </label>
+            <input type="password" name="password" id="password" class="form-control" 
+                   placeholder="Enter password" required>
+        </div>
+
+        <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
+                <input type="checkbox" name="remember" value="1">
+                <span>Remember me for 7 days</span>
+            </label>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-block btn-lg">
+                <i class="fas fa-sign-in-alt"></i> Login as Administrator
+            </button>
+        </div>
+    </form>
+
+    <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--gray-200);">
+        <p style="color: var(--text-secondary);">
+            Not an administrator?
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap;">
+            <a href="{{ url_for('provider_login') }}" class="btn btn-outline">
+                <i class="fas fa-hospital-user"></i> Provider Login
+            </a>
+            <a href="{{ url_for('register_provider') }}" class="btn btn-outline">
+                <i class="fas fa-user-plus"></i> Register Organization
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="max-width: 600px; margin: 2rem auto; background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border-left: 4px solid var(--primary);">
+    <div style="display: flex; align-items: start; gap: 1rem;">
+        <div style="font-size: 1.5rem; color: var(--primary);">
+            <i class="fas fa-info-circle"></i>
+        </div>
+        <div>
+            <h4 style="margin-bottom: 0.5rem; color: var(--primary);">Admin Access Only</h4>
+            <p style="margin: 0; color: var(--gray-700);">
+                This login is for system administrators only. If you are a service provider 
+                or need to report an incident, please use the appropriate links above.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

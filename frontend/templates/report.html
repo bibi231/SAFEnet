@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Report - SAFEnet{% endblock %}
+
+{% block content %}
+<div class="auth-container" style="min-height: auto; padding: 4rem 1rem;">
+    <div class="auth-card" style="max-width: 800px; border-top: 5px solid var(--primary);">
+        <div class="auth-header"
+            style="text-align: left; margin-bottom: 2rem; border-bottom: 1px solid var(--gray-200); padding-bottom: 2rem;">
+            <h2
+                style="font-size: 2rem; color: var(--gray-900); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem;">
+                <i class="fas fa-file-shield" style="color: var(--primary);"></i> Secure Incident Report
+            </h2>
+            <p style="color: var(--text-secondary); font-size: 1.1rem;">
+                Your safety is our priority. Submit your report anonymously and securely.
+            </p>
+
+            <div class="alert alert-info"
+                style="margin-top: 1.5rem; display: flex; gap: 1rem; align-items: start; background-color: #EFF6FF; border-color: #BFDBFE; color: #1E40AF;">
+                <i class="fas fa-shield-alt" style="font-size: 1.5rem; margin-top: 0.2rem;"></i>
+                <div>
+                    <strong>100% Anonymous & Secure</strong>
+                    <p style="margin-bottom: 0; font-size: 0.9rem;">We do not log your IP address or device information.
+                        All data is encrypted.</p>
+                </div>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('report') }}" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <input type="hidden" name="latitude" id="latitude">
+            <input type="hidden" name="longitude" id="longitude">
+
+            <!-- Incident Details Section -->
+            <h3
+                style="font-size: 1.25rem; color: var(--gray-800); margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--gray-100);">
+                <i class="fas fa-info-circle" style="color: var(--primary);"></i> Incident Details
+            </h3>
+
+            <div class="row"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div class="form-group">
+                    <label for="category" class="form-label"
+                        style="font-weight: 600; margin-bottom: 0.5rem; display: block;">
+                        Incident Category <span style="color: var(--danger)">*</span>
+                    </label>
+                    <div style="position: relative;">
+                        <i class="fas fa-list"
+                            style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--gray-400);"></i>
+                        <select name="category" id="category" class="form-input"
+                            style="padding-left: 2.5rem; width: 100%;" required>
+                            <option value="">Select category...</option>
+                            <option value="Assault">Physical Assault</option>
+                            <option value="Sexual Violence">Sexual Violence</option>
+                            <option value="Domestic Violence">Domestic Violence</option>
+                            <option value="Theft">Theft/Robbery</option>
+                            <option value="Medical Emergency">Medical Emergency</option>
+                            <option value="Child Abuse">Child Abuse</option>
+                            <option value="Harassment">Harassment</option>
+                            <option value="Drug-related">Drug-related Incident</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="incident_date" class="form-label"
+                        style="font-weight: 600; margin-bottom: 0.5rem; display: block;">
+                        Date of Incident <span style="color: var(--danger)">*</span>
+                    </label>
+                    <div style="position: relative;">
+                        <i class="fas fa-calendar"
+                            style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--gray-400);"></i>
+                        <input type="date" name="incident_date" id="incident_date" class="form-input"
+                            style="padding-left: 2.5rem; width: 100%;" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location Section -->
+            <h3
+                style="font-size: 1.25rem; color: var(--gray-800); margin: 2rem 0 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--gray-100);">
+                <i class="fas fa-map-marker-alt" style="color: var(--primary);"></i> Location
+            </h3>
+
+            <div class="form-group">
+                <label for="location" class="form-label"
+                    style="font-weight: 600; margin-bottom: 0.5rem; display: block;">
+                    Location Description <span style="color: var(--danger)">*</span>
+                </label>
+                <div style="display: flex; gap: 0.5rem;">
+                    <div style="position: relative; flex-grow: 1;">
+                        <i class="fas fa-map-pin"
+                            style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--gray-400);"></i>
+                        <input type="text" name="location" id="location" class="form-input"
+                            style="padding-left: 2.5rem; width: 100%;" placeholder="e.g., Wuse 2, Near Gwarinpa Market"
+                            required>
+                    </div>
+                    <button type="button" id="use-my-location" class="btn btn-outline" style="white-space: nowrap;">
+                        <i class="fas fa-crosshairs"></i> Use My Location
+                    </button>
+                </div>
+                <div id="location-status" style="font-size: 0.85rem; margin-top: 0.5rem; color: var(--text-secondary);">
+                </div>
+                <div id="map-link-container" style="margin-top: 0.5rem; display: none;">
+                    <a href="#" target="_blank" id="map-link"
+                        style="color: var(--primary); font-size: 0.9rem; display: flex; align-items: center; gap: 0.25rem;">
+                        <i class="fas fa-external-link-alt"></i> View on Google Maps
+                    </a>
+                </div>
+            </div>
+
+            <!-- Description Section -->
+            <h3
+                style="font-size: 1.25rem; color: var(--gray-800); margin: 2rem 0 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--gray-100);">
+                <i class="fas fa-pen" style="color: var(--primary);"></i> Description & Evidence
+            </h3>
+
+            <div class="form-group">
+                <label for="description" class="form-label"
+                    style="font-weight: 600; margin-bottom: 0.5rem; display: block;">
+                    Incident Details <span style="color: var(--danger)">*</span>
+                </label>
+                <textarea name="description" id="description" class="form-input" rows="6"
+                    placeholder="Please describe what happened. Include relevant details like time, people involved, or any immediate needs."
+                    required minlength="20"
+                    style="resize: vertical; width: 100%; padding: 1rem; line-height: 1.5;"></textarea>
+                <small style="color: var(--text-secondary); float: right; margin-top: 0.25rem;">Minimum 20
+                    characters</small>
+            </div>
+
+            <div class="form-group" style="margin-top: 2rem;">
+                <label class="form-label" style="font-weight: 600; margin-bottom: 0.5rem; display: block;">
+                    Upload Evidence (Optional)
+                </label>
+                <div style="border: 2px dashed var(--gray-300); border-radius: var(--radius-lg); padding: 2rem; text-align: center; cursor: pointer; transition: all 0.3s;"
+                    onclick="document.getElementById('file-upload').click();" id="drop-zone">
+                    <i class="fas fa-cloud-upload-alt"
+                        style="font-size: 2.5rem; color: var(--gray-400); margin-bottom: 1rem;"></i>
+                    <p style="margin-bottom: 0.5rem; color: var(--gray-600); font-weight: 500;">Click to upload photos
+                        or videos</p>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary);">Supported: JPG, PNG, MP4, MOV, PDF (Max
+                        16MB)</p>
+                    <input type="file" name="attachments" id="file-upload" multiple
+                        accept=".jpg,.jpeg,.png,.gif,.mp4,.mov,.pdf" style="display: none;"
+                        onchange="updateFileList(this)">
+                </div>
+                <div id="file-list" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
+            </div>
+
+            <div class="form-actions" style="margin-top: 3rem;">
+                <button type="submit" class="btn btn-primary btn-block btn-lg"
+                    style="display: flex; justify-content: center; align-items: center; gap: 0.75rem;">
+                    <i class="fas fa-paper-plane"></i> Submit Secure Report
+                </button>
+                <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
+                    By clicking submit, your report will be encrypted and sent to our secure server.
+                </p>
+            </div>
+        </form>
+    </div>
+
+    <div style="max-width: 800px; margin: 2rem auto 0; text-align: center;">
+        <div class="alert alert-warning"
+            style="background: #FFFBEB; border: 1px solid #FCD34D; color: #92400E; border-radius: var(--radius-lg); padding: 1rem; display: inline-flex; align-items: center; gap: 0.75rem; text-align: left;">
+            <i class="fas fa-exclamation-triangle" style="font-size: 1.25rem;"></i>
+            <div>
+                <strong>Emergency?</strong>
+                If you are in immediate danger, please call <a href="tel:112"
+                    style="font-weight: bold; text-decoration: underline; color: inherit;">112</a> immediately.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Max date today
+    document.getElementById('incident_date').max = new Date().toISOString().split('T')[0];
+
+    // Location handling
+    const locationBtn = document.getElementById('use-my-location');
+    const statusDiv = document.getElementById('location-status');
+    const mapLinkContainer = document.getElementById('map-link-container');
+    const mapLink = document.getElementById('map-link');
+
+    locationBtn.addEventListener('click', () => {
+        if (!navigator.geolocation) {
+            statusDiv.textContent = 'Geolocation is not supported by your browser';
+            statusDiv.style.color = 'var(--danger)';
+            return;
+        }
+
+        statusDiv.textContent = 'Locating...';
+        statusDiv.style.color = 'var(--text-secondary)';
+        locationBtn.disabled = true;
+        locationBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Locating...';
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+
+                statusDiv.innerHTML = `<i class="fas fa-check-circle"></i> Location captured: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+                statusDiv.style.color = 'var(--success)';
+
+                mapLink.href = `https://www.google.com/maps?q=${lat},${lng}`;
+                mapLinkContainer.style.display = 'block';
+
+                locationBtn.innerHTML = '<i class="fas fa-crosshairs"></i> Location Updated';
+                locationBtn.classList.remove('btn-outline');
+                locationBtn.classList.add('btn-success');
+            },
+            () => {
+                statusDiv.textContent = 'Unable to retrieve your location';
+                statusDiv.style.color = 'var(--danger)';
+                locationBtn.disabled = false;
+                locationBtn.innerHTML = '<i class="fas fa-crosshairs"></i> Use My Location';
+            }
+        );
+    });
+
+    // File upload handling
+    function updateFileList(input) {
+        const fileList = document.getElementById('file-list');
+        fileList.innerHTML = '';
+
+        if (input.files.length > 0) {
+            Array.from(input.files).forEach(file => {
+                const item = document.createElement('div');
+                item.style.cssText = 'background: var(--gray-50); padding: 0.5rem 1rem; border-radius: var(--radius-md); font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; border: 1px solid var(--gray-200);';
+
+                let iconClass = 'fa-file';
+                if (file.type.startsWith('image/')) iconClass = 'fa-file-image';
+                else if (file.type.startsWith('video/')) iconClass = 'fa-file-video';
+                else if (file.type === 'application/pdf') iconClass = 'fa-file-pdf';
+
+                item.innerHTML = `<i class="fas ${iconClass}" style="color: var(--primary);"></i> ${file.name} <span style="color: var(--text-secondary); margin-left: auto;">${(file.size / 1024 / 1024).toFixed(2)} MB</span>`;
+                fileList.appendChild(item);
+            });
+        }
+    }
+
+    // Drag and drop effects
+    const dropZone = document.getElementById('drop-zone');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+        dropZone.style.borderColor = 'var(--primary)';
+        dropZone.style.backgroundColor = '#EFF6FF';
+    }
+
+    function unhighlight(e) {
+        dropZone.style.borderColor = 'var(--gray-300)';
+        dropZone.style.backgroundColor = 'transparent';
+    }
+
+    dropZone.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        document.getElementById('file-upload').files = files;
+        updateFileList(document.getElementById('file-upload'));
+    }
+</script>
+{% endblock %}

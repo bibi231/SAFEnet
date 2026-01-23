@@ -1,0 +1,330 @@
+{% extends "base.html" %}
+
+{% block title %}Home - SAFEnet | Secure Anonymous Reporting{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero">
+    <div class="hero-content">
+        <h1 class="slide-up">🛡️ Secure. Anonymous. Safe.</h1>
+        <p class="lead">
+            A privacy-first platform for anonymous emergency reporting and crisis response in Abuja, Nigeria.
+            <br>Your identity is protected. Your voice matters.
+        </p>
+        <div class="hero-cta">
+            <a href="{{ url_for('report') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-exclamation-triangle"></i> Report Incident Anonymously
+            </a>
+            <a href="{{ url_for('directory') }}" class="btn btn-secondary btn-lg">
+                <i class="fas fa-hospital"></i> Find Help Near You
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Key Features Section -->
+<section class="features-section fade-in">
+    <div class="section-header">
+        <h2>Why Choose SAFEnet?</h2>
+        <p>Built with privacy, security, and your safety as our top priorities</p>
+    </div>
+    
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-user-secret"></i>
+            </div>
+            <h3>100% Anonymous</h3>
+            <p>
+                We don't collect names, IP addresses, or personal information. 
+                Your reports are completely anonymous with secure tracking codes.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3>Military-Grade Security</h3>
+            <p>
+                End-to-end encryption, secure data storage, and compliance with 
+                Nigeria Data Protection Act 2023.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-check-double"></i>
+            </div>
+            <h3>Verified Providers</h3>
+            <p>
+                All NGOs, hospitals, and service providers are thoroughly vetted 
+                and verified by our team.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <h3>24/7 Availability</h3>
+            <p>
+                Submit reports anytime, anywhere. Our platform is always available 
+                when you need help.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-bell"></i>
+            </div>
+            <h3>Real-time Updates</h3>
+            <p>
+                Track your report status in real-time with your unique tracking code. 
+                Stay informed at every step.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h3>Mobile Friendly</h3>
+            <p>
+                Access SAFEnet from any device - desktop, tablet, or smartphone. 
+                Report on the go.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="features-section" style="background: white; padding: 3rem; border-radius: 1.5rem; box-shadow: var(--shadow-sm);">
+    <div class="section-header">
+        <h2><i class="fas fa-route"></i> How It Works</h2>
+        <p>Four simple steps to get the help you need</p>
+    </div>
+    
+    <div class="features-grid">
+        <div class="feature-card" style="border: 2px solid var(--primary);">
+            <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <i class="fas fa-edit"></i>
+            </div>
+            <h3>1. Submit Report</h3>
+            <p>
+                Fill out our secure anonymous form with details about the incident. 
+                No personal information required.
+            </p>
+        </div>
+
+        <div class="feature-card" style="border: 2px solid var(--accent);">
+            <div class="feature-icon" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%);">
+                <i class="fas fa-barcode"></i>
+            </div>
+            <h3>2. Get Tracking Code</h3>
+            <p>
+                Receive a unique tracking code to monitor your report's progress 
+                and status updates.
+            </p>
+        </div>
+
+        <div class="feature-card" style="border: 2px solid var(--info);">
+            <div class="feature-icon" style="background: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%);">
+                <i class="fas fa-users"></i>
+            </div>
+            <h3>3. We Connect You</h3>
+            <p>
+                Verified service providers are notified and assigned based on 
+                incident type and location.
+            </p>
+        </div>
+
+        <div class="feature-card" style="border: 2px solid var(--success);">
+            <div class="feature-icon" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%);">
+                <i class="fas fa-hands-helping"></i>
+            </div>
+            <h3>4. Receive Help</h3>
+            <p>
+                Providers reach out through safe channels to provide assistance 
+                and support you need.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="features-section">
+    <div class="section-header">
+        <h2><i class="fas fa-chart-line"></i> Our Impact</h2>
+        <p>Making a difference in Abuja communities</p>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-value" data-stat="total_reports">500+</div>
+                    <div class="stat-label"><i class="fas fa-file-alt"></i> Reports Handled</div>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+            </div>
+            <div class="stat-change positive">
+                <i class="fas fa-arrow-up"></i> 23% this month
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-value" data-stat="verified_providers">50+</div>
+                    <div class="stat-label"><i class="fas fa-check-circle"></i> Verified Providers</div>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-hospital"></i>
+                </div>
+            </div>
+            <div class="stat-change positive">
+                <i class="fas fa-arrow-up"></i> Growing network
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-value">< 24h</div>
+                    <div class="stat-label"><i class="fas fa-clock"></i> Avg. Response Time</div>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-stopwatch"></i>
+                </div>
+            </div>
+            <div class="stat-change positive">
+                <i class="fas fa-arrow-down"></i> 40% faster
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-value">95%</div>
+                    <div class="stat-label"><i class="fas fa-smile"></i> Satisfaction Rate</div>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+            </div>
+            <div class="stat-change positive">
+                <i class="fas fa-arrow-up"></i> Excellent feedback
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="features-section">
+    <div class="section-header">
+        <h2><i class="fas fa-list"></i> Incident Categories We Handle</h2>
+        <p>Report any type of incident - we're here to help</p>
+    </div>
+    
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon" style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);">
+                <i class="fas fa-hand-paper"></i>
+            </div>
+            <h3>Assault & Violence</h3>
+            <p>Physical assault, domestic violence, harassment</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);">
+                <i class="fas fa-user-injured"></i>
+            </div>
+            <h3>Sexual Violence</h3>
+            <p>Sexual assault, rape, abuse, harassment</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);">
+                <i class="fas fa-ambulance"></i>
+            </div>
+            <h3>Medical Emergency</h3>
+            <p>Health emergencies, injuries, urgent medical needs</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon" style="background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%);">
+                <i class="fas fa-child"></i>
+            </div>
+            <h3>Child Protection</h3>
+            <p>Child abuse, neglect, exploitation</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon" style="background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);">
+                <i class="fas fa-mask"></i>
+            </div>
+            <h3>Theft & Robbery</h3>
+            <p>Burglary, theft, robbery, property crimes</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon" style="background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%);">
+                <i class="fas fa-ellipsis-h"></i>
+            </div>
+            <h3>Other Incidents</h3>
+            <p>Any other safety or emergency concerns</p>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="hero" style="margin-top: 3rem;">
+    <div class="hero-content">
+        <h2 style="color: white; font-size: 2.5rem;">
+            <i class="fas fa-question-circle"></i> Need Help Right Now?
+        </h2>
+        <p class="lead">
+            Don't wait. Submit an anonymous report and connect with verified service providers in your area.
+        </p>
+        <div class="hero-cta">
+            <a href="{{ url_for('report') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-file-medical"></i> Submit Anonymous Report
+            </a>
+            <a href="{{ url_for('directory') }}" class="btn btn-secondary btn-lg">
+                <i class="fas fa-map-marked-alt"></i> Browse Service Directory
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Emergency Notice -->
+<div class="card" style="margin-top: 2rem; border-left: 4px solid var(--danger); background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);">
+    <div style="display: flex; align-items: start; gap: 1rem;">
+        <div style="font-size: 2rem; color: var(--danger);">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div>
+            <h3 style="color: var(--danger); margin-bottom: 0.5rem;">
+                <i class="fas fa-phone-volume"></i> Emergency Situations
+            </h3>
+            <p style="margin-bottom: 0.5rem; color: var(--gray-700);">
+                If you are in <strong>immediate danger</strong>, please call emergency services directly:
+            </p>
+            <div style="display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 1rem;">
+                <div>
+                    <strong style="color: var(--danger);"><i class="fas fa-police"></i> Police:</strong> 112 or 08127155132
+                </div>
+                <div>
+                    <strong style="color: var(--danger);"><i class="fas fa-ambulance"></i> Ambulance:</strong> 112
+                </div>
+                <div>
+                    <strong style="color: var(--danger);"><i class="fas fa-fire"></i> Fire Service:</strong> 112
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

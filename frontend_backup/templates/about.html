@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}About SAFEnet{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>About SAFEnet</h1>
+    <p class="lead">Secure Anonymous Feedback & Emergency Network</p>
+
+    <h2>Our Mission</h2>
+    <p>
+        SAFEnet was created to provide a safe, secure, and anonymous platform for reporting incidents
+        and emergencies in Abuja, Nigeria. We believe that everyone deserves access to help and support,
+        regardless of their circumstances or ability to identify themselves.
+    </p>
+
+    <h2>How It Works</h2>
+    <ol>
+        <li><strong>Submit a Report:</strong> Fill out our anonymous form with details about the incident</li>
+        <li><strong>Get a Tracking Code:</strong> Receive a unique code to monitor your report's progress</li>
+        <li><strong>We Connect You:</strong> Verified service providers are notified and assigned</li>
+        <li><strong>Receive Help:</strong> Providers reach out through safe channels to assist you</li>
+    </ol>
+
+    <h2>Privacy & Security</h2>
+    <p>
+        Your privacy is our top priority. SAFEnet is designed with privacy-by-design principles:
+    </p>
+    <ul>
+        <li>We do not collect IP addresses or personal identifiers</li>
+        <li>Reports are submitted completely anonymously</li>
+        <li>All data is encrypted in transit and at rest</li>
+        <li>We comply with the Nigeria Data Protection Act 2023</li>
+        <li>Our platform is regularly audited for security</li>
+    </ul>
+
+    <h2>Our Partners</h2>
+    <p>
+        We work with verified NGOs, hospitals, legal aid organizations, and emergency services
+        throughout Abuja to ensure you get the help you need. All partner organizations undergo
+        thorough verification before being listed on our platform.
+    </p>
+
+    <h2>For Service Providers</h2>
+    <p>
+        Are you an organization that provides emergency services, legal aid, medical assistance,
+        or other support services? <a href="{{ url_for('register_provider') }}">Register your organization</a>
+        to join our network of verified providers.
+    </p>
+
+    <h2>Contact Us</h2>
+    <p>
+        For questions, feedback, or support:<br>
+        Email: <a href="mailto:support@safenet.ng">support@safenet.ng</a><br>
+        Emergency: Call 112 (Police, Fire, Ambulance)
+    </p>
+
+    <h2>Technology</h2>
+    <p>
+        SAFEnet is built with modern web technologies including Flask, PostgreSQL, and implements
+        industry-standard security practices. Our codebase is regularly updated and maintained to
+        ensure the highest levels of security and reliability.
+    </p>
+</div>
+{% endblock %}

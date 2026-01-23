@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description"
+        content="{% block description %}SAFEnet - Secure Anonymous Feedback & Emergency Network for reporting incidents in Abuja, Nigeria{% endblock %}">
+    <meta name="keywords"
+        content="anonymous reporting, emergency, Nigeria, Abuja, crime reporting, safety, secure platform">
+    <meta name="author" content="SAFEnet">
+
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;">
+    <meta name="referrer" content="no-referrer">
+
+    <title>{% block title %}SAFEnet - Secure Anonymous Reporting Platform{% endblock %}</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- Header & Navigation -->
+    <header>
+        <nav class="navbar container">
+            <a href="{{ url_for('index') }}" class="logo">
+                <span class="logo-icon">🛡️</span>
+                <span>SAFEnet</span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="{{ url_for('index') }}"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="{{ url_for('report') }}"><i class="fas fa-exclamation-triangle"></i> Report Incident</a>
+                </li>
+                <li><a href="{{ url_for('directory') }}"><i class="fas fa-hospital"></i> Service Directory</a></li>
+                <li><a href="{{ url_for('about') }}"><i class="fas fa-info-circle"></i> About</a></li>
+
+                {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                {% else %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle"><i class="fas fa-user"></i> Login <i
+                            class="fas fa-chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="{{ url_for('provider_login') }}"><i class="fas fa-hospital-user"></i> Provider
+                            Login</a>
+                        <a href="{{ url_for('admin_login') }}"><i class="fas fa-user-shield"></i> Admin Login</a>
+                    </div>
+                </li>
+                <li><a href="{{ url_for('register_provider') }}" class="btn btn-accent"><i class="fas fa-user-plus"></i>
+                        Register Organization</a></li>
+                {% endif %}
+            </ul>
+
+            <!-- Mobile Menu Toggle -->
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                <span class="alert-icon">
+                    {% if category == 'success' %}
+                    <i class="fas fa-check-circle"></i>
+                    {% elif category == 'error' %}
+                    <i class="fas fa-exclamation-circle"></i>
+                    {% elif category == 'warning' %}
+                    <i class="fas fa-exclamation-triangle"></i>
+                    {% else %}
+                    <i class="fas fa-info-circle"></i>
+                    {% endif %}
+                </span>
+                <div>{{ message }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <!-- About Section -->
+                <div class="footer-section">
+                    <h3><i class="fas fa-shield-alt"></i> SAFEnet</h3>
+                    <p style="color: var(--gray-400); line-height: 1.6;">
+                        A secure, anonymous platform for reporting incidents and connecting with verified
+                        service providers in Abuja, Nigeria.
+                    </p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="footer-section">
+                    <h3><i class="fas fa-link"></i> Quick Links</h3>
+                    <ul>
+                        <li><a href="{{ url_for('index') }}"><i class="fas fa-angle-right"></i> Home</a></li>
+                        <li><a href="{{ url_for('report') }}"><i class="fas fa-angle-right"></i> Report Incident</a>
+                        </li>
+                        <li><a href="{{ url_for('directory') }}"><i class="fas fa-angle-right"></i> Service
+                                Directory</a></li>
+                        <li><a href="{{ url_for('about') }}"><i class="fas fa-angle-right"></i> About Us</a></li>
+                        <li><a href="{{ url_for('register_provider') }}"><i class="fas fa-angle-right"></i> Register
+                                Organization</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div class="footer-section">
+                    <h3><i class="fas fa-life-ring"></i> Support</h3>
+                    <ul>
+                        <li><a href="{{ url_for('about', _anchor='support') }}"><i class="fas fa-angle-right"></i> Help
+                                Center</a></li>
+                        <li><a href="{{ url_for('about', _anchor='privacy') }}"><i class="fas fa-angle-right"></i>
+                                Privacy Policy</a></li>
+                        <li><a href="{{ url_for('about', _anchor='mission') }}"><i class="fas fa-angle-right"></i> Terms
+                                of Service</a></li>
+                        <li><a href="{{ url_for('about', _anchor='privacy') }}"><i class="fas fa-angle-right"></i> NDPA
+                                Compliance</a></li>
+                        <li><a href="{{ url_for('about', _anchor='technology') }}"><i class="fas fa-angle-right"></i>
+                                Security</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact & Emergency -->
+                <div class="footer-section">
+                    <h3><i class="fas fa-phone-alt"></i> Contact</h3>
+                    <ul>
+                        <li style="color: var(--gray-400);"><i class="fas fa-envelope"></i> support@safenet.ng</li>
+                        <li style="color: var(--gray-400);"><i class="fas fa-map-marker-alt"></i> Abuja, FCT, Nigeria
+                        </li>
+                    </ul>
+                    <h3 style="margin-top: 1rem; color: var(--danger);"><i class="fas fa-ambulance"></i> Emergency</h3>
+                    <ul>
+                        <li style="color: var(--gray-400);"><i class="fas fa-phone"></i> Police: 112</li>
+                        <li style="color: var(--gray-400);"><i class="fas fa-phone"></i> Fire: 112</li>
+                        <li style="color: var(--gray-400);"><i class="fas fa-phone"></i> Ambulance: 112</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 SAFEnet. All rights reserved. Built with ❤️ for Abuja.</p>
+                <p style="font-size: 0.875rem; margin-top: 0.5rem;">
+                    <i class="fas fa-lock"></i> Your privacy is our priority. We are compliant with the
+                    <strong>Nigeria Data Protection Act 2023</strong>.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

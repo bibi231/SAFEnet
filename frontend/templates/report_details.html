@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="report-details-container" style="max-width: 900px; margin: 2rem auto; padding: 0 1rem;">
+    <div class="card"
+        style="background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden;">
+        <div class="card-header"
+            style="background: var(--primary-color); color: white; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="margin: 0; font-size: 1.5rem;">Report #{{ report.tracking_code }}</h2>
+                <p style="margin: 0.5rem 0 0; opacity: 0.9;">Submitted on {{ report.submission_date.strftime('%B %d, %Y
+                    at %I:%M %p') }}</p>
+            </div>
+            <span class="status-badge status-{{ report.status|lower }}"
+                style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;">{{
+                report.status }}</span>
+        </div>
+
+        <div class="card-body" style="padding: 2rem;">
+            <!-- Key Information Grid -->
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                <div class="info-group">
+                    <label
+                        style="color: #64748b; font-size: 0.875rem; font-weight: 600; display: block; margin-bottom: 0.25rem;">Category</label>
+                    <div style="font-size: 1.1rem; color: #1e293b;">{{ report.category }}</div>
+                </div>
+                <div class="info-group">
+                    <label
+                        style="color: #64748b; font-size: 0.875rem; font-weight: 600; display: block; margin-bottom: 0.25rem;">Location</label>
+                    <div style="font-size: 1.1rem; color: #1e293b;">{{ report.location }}</div>
+                </div>
+                <div class="info-group">
+                    <label
+                        style="color: #64748b; font-size: 0.875rem; font-weight: 600; display: block; margin-bottom: 0.25rem;">Incident
+                        Date</label>
+                    <div style="font-size: 1.1rem; color: #1e293b;">{{ report.incident_date.strftime('%B %d, %Y') }}
+                    </div>
+                </div>
+                {% if report.priority %}
+                <div class="info-group">
+                    <label
+                        style="color: #64748b; font-size: 0.875rem; font-weight: 600; display: block; margin-bottom: 0.25rem;">Priority</label>
+                    <div style="font-size: 1.1rem; color: #1e293b;">{{ report.priority }}</div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Description -->
+            <div style="margin-bottom: 2rem;">
+                <h3
+                    style="color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem; margin-bottom: 1rem;">
+                    Description</h3>
+                <div
+                    style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; line-height: 1.6; color: #334155;">
+                    {{ report.description }}
+                </div>
+            </div>
+
+            <!-- Map Location -->
+            {% if report.latitude and report.longitude %}
+            <div style="margin-bottom: 2rem;">
+                <h3
+                    style="color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem; margin-bottom: 1rem;">
+                    Map Location</h3>
+                <div style="border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0;">
+                    <iframe width="100%" height="300" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                        src="https://maps.google.com/maps?q={{ report.latitude }},{{ report.longitude }}&hl=en&z=14&output=embed">
+                    </iframe>
+                </div>
+                <a href="https://www.google.com/maps/search/?api=1&query={{ report.latitude }},{{ report.longitude }}"
+                    target="_blank"
+                    style="display: inline-block; margin-top: 0.5rem; color: var(--primary-color); text-decoration: none;">
+                    <i class="fas fa-external-link-alt"></i> View in Google Maps
+                </a>
+            </div>
+            {% endif %}
+
+            <!-- Attachments -->
+            {% if report.attachments %}
+            <div style="margin-bottom: 2rem;">
+                <h3
+                    style="color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem; margin-bottom: 1rem;">
+                    Attachments</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;">
+                    {% for attachment in report.attachments %}
+                    <a href="{{ url_for('static', filename=attachment.file_path) }}" target="_blank"
+                        style="text-decoration: none;">
+                        <div
+                            style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; text-align: center; transition: all 0.2s; background: #fff;">
+                            {% if attachment.file_type in ['jpg', 'jpeg', 'png', 'gif'] %}
+                            <i class="fas fa-image" style="font-size: 2rem; color: #3b82f6; margin-bottom: 0.5rem;"></i>
+                            {% elif attachment.file_type == 'pdf' %}
+                            <i class="fas fa-file-pdf"
+                                style="font-size: 2rem; color: #ef4444; margin-bottom: 0.5rem;"></i>
+                            {% elif attachment.file_type in ['mp4', 'mov'] %}
+                            <i class="fas fa-video" style="font-size: 2rem; color: #10b981; margin-bottom: 0.5rem;"></i>
+                            {% else %}
+                            <i class="fas fa-file" style="font-size: 2rem; color: #64748b; margin-bottom: 0.5rem;"></i>
+                            {% endif %}
+                            <div
+                                style="font-size: 0.875rem; color: #334155; word-break: break-all; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                {{ attachment.original_filename }}</div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Actions (Only for Admin/Provider) -->
+            {% if current_user.is_authenticated %}
+            <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid #f1f5f9; display: flex; gap: 1rem;">
+                <button onclick="window.history.back()" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </button>
+                {% if current_user.role == 'provider' and report.status != 'Resolved' %}
+                <button onclick="updateReportStatus('Resolved')" class="btn btn-primary">
+                    <i class="fas fa-check"></i> Mark as Resolved
+                </button>
+                {% if report.status == 'Assigned' %}
+                <button onclick="updateReportStatus('In Progress')" class="btn btn-success">
+                    <i class="fas fa-play"></i> Start Investigation
+                </button>
+                {% endif %}
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateReportStatus(status) {
+        if (confirm(`Are you sure you want to update this status to ${status}?`)) {
+            const formData = new FormData();
+            formData.append('status', status);
+            formData.append('message', `Status manually updated to ${status}`);
+
+            fetch(`/provider/update_report/{{ report.id }}`, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('Error updating status');
+                    }
+                });
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="track-report-container" style="max-width: 800px; margin: 2rem auto; padding: 0 1rem;">
+    <div class="text-center mb-4">
+        <h1 style="color: var(--text-color);">Report Status Tracking</h1>
+        <p>Viewing details for Reference #{{ report.tracking_code }}</p>
+    </div>
+
+    <div class="card"
+        style="background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 2rem;">
+        <div class="card-body" style="padding: 2rem;">
+            <!-- Status Stepper -->
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3rem; position: relative;">
+                <!-- Line -->
+                <div
+                    style="position: absolute; top: 15px; left: 0; right: 0; height: 2px; background: #e2e8f0; z-index: 1;">
+                </div>
+
+                {% set statuses = ['Pending', 'Assigned', 'In Progress', 'Resolved'] %}
+                {% set current_index = statuses.index(report.status) if report.status in statuses else 0 %}
+
+                {% for status in statuses %}
+                <div style="position: relative; z-index: 2; text-align: center; width: 25%;">
+                    <div
+                        style="width: 32px; height: 32px; border-radius: 50%; background: {{ 'var(--primary-color)' if loop.index0 <= current_index else '#e2e8f0' }}; color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem; font-weight: bold;">
+                        {% if loop.index0 < current_index %} <i class="fas fa-check" style="font-size: 0.8rem;"></i>
+                            {% else %}
+                            {{ loop.index }}
+                            {% endif %}
+                    </div>
+                    <div
+                        style="font-size: 0.875rem; font-weight: 600; color: {{ '#1e293b' if loop.index0 <= current_index else '#94a3b8' }};">
+                        {{ status }}</div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="report-summary" style="background: #f8fafc; padding: 1.5rem; border-radius: 8px;">
+                <h3 style="margin-top: 0;">Incident Summary</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div><strong>Category:</strong> {{ report.category }}</div>
+                    <div><strong>Date submitted:</strong> {{ report.submission_date.strftime('%Y-%m-%d') }}</div>
+                    <div style="grid-column: 1 / -1;"><strong>Description:</strong> {{ report.description[:200] }}...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if updates %}
+    <div class="updates-timeline">
+        <h3 style="margin-bottom: 1.5rem;">Activity Log</h3>
+
+        {% for update in updates %}
+        <div class="update-item"
+            style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 1rem; border-left: 4px solid var(--primary-color);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span class="status-badge"
+                    style="background: #e0f2fe; color: #0284c7; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">{{
+                    update.status }}</span>
+                <small style="color: #64748b;">{{ update.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+            </div>
+            <p style="margin: 0; color: #334155;">{{ update.message }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-updates" style="text-align: center; color: #64748b; padding: 2rem;">
+        <i class="fas fa-history" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+        <p>No activity updates yet.</p>
+    </div>
+    {% endif %}
+
+    <div style="margin-top: 2rem; text-align: center;">
+        <a href="{{ url_for('index') }}" class="btn btn-outline">Return Home</a>
+    </div>
+</div>
+{% endblock %}
