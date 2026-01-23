@@ -6,22 +6,35 @@
     <title>SAFEnet - Secure Anonymous Feedback & Emergency Network</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <header>
         <nav class="navbar">
             <div class="container">
                 <a href="{{ url_for('index') }}" class="logo">SAFEnet</a>
+                <input type="checkbox" id="nav-toggle" class="nav-toggle">
+                <label for="nav-toggle" class="nav-toggle-label">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </label>
                 <ul class="nav-links">
-                    <li><a href="{{ url_for('index') }}">Home</a></li>
-                    <li><a href="{{ url_for('report_incident') }}">Report Incident</a></li>
-                    <li><a href="{{ url_for('directory') }}">Service Directory</a></li>
-                    <li><a href="{{ url_for('about') }}">About</a></li>
+                    <li><a href="{{ url_for('index') }}"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="{{ url_for('report') }}"><i class="fas fa-exclamation-triangle"></i> Report Incident</a></li>
+                    <li><a href="{{ url_for('directory') }}"><i class="fas fa-search"></i> Service Directory</a></li>
+                    <li><a href="{{ url_for('about') }}"><i class="fas fa-info-circle"></i> About</a></li>
                     {% if current_user.is_authenticated %}
-                        <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-                        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                        <li><a href="{{ url_for('dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                     {% else %}
-                        <li><a href="{{ url_for('login') }}">Provider Login</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle"><i class="fas fa-sign-in-alt"></i> Login <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('login') }}"><i class="fas fa-user-shield"></i> Admin Login</a></li>
+                                <li><a href="{{ url_for('register_provider') }}"><i class="fas fa-user-md"></i> Provider Signup</a></li>
+                            </ul>
+                        </li>
                     {% endif %}
                 </ul>
             </div>
@@ -44,8 +57,49 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2026 SAFEnet. All rights reserved.</p>
-            <p class="disclaimer">SAFEnet is a secure platform for anonymous reporting. In case of immediate life-threatening danger, please contact emergency services directly.</p>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-info-circle"></i> About SAFEnet</h4>
+                    <p>A secure platform for anonymous emergency reporting and crisis response in Nigeria, committed to protecting victims' privacy and connecting them with verified support services.</p>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-link"></i> Quick Links</h4>
+                    <ul>
+                        <li><a href="{{ url_for('index') }}"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="{{ url_for('report') }}"><i class="fas fa-exclamation-triangle"></i> Report Incident</a></li>
+                        <li><a href="{{ url_for('directory') }}"><i class="fas fa-search"></i> Service Directory</a></li>
+                        <li><a href="{{ url_for('about') }}"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-shield-alt"></i> Safety & Privacy</h4>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-lock"></i> Privacy Policy</a></li>
+                        <li><a href="#"><i class="fas fa-file-contract"></i> Terms of Service</a></li>
+                        <li><a href="#"><i class="fas fa-gavel"></i> NDPA Compliance</a></li>
+                        <li><a href="#"><i class="fas fa-question-circle"></i> FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-phone"></i> Emergency Contacts</h4>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-ambulance"></i> Emergency: 112</a></li>
+                        <li><a href="#"><i class="fas fa-user-shield"></i> Police: 199</a></li>
+                        <li><a href="#"><i class="fas fa-heartbeat"></i> Medical: 112</a></li>
+                        <li><a href="#"><i class="fas fa-balance-scale"></i> Legal Aid: Contact Directory</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="disclaimer"><i class="fas fa-exclamation-triangle"></i> SAFEnet is a secure platform for anonymous reporting. In case of immediate life-threatening danger, please contact emergency services directly.</p>
+                <p>&copy; 2026 SAFEnet. All rights reserved.</p>
+                <div class="footer-links">
+                    {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('login') }}"><i class="fas fa-user-shield"></i> Admin Login</a> |
+                        <a href="{{ url_for('register_provider') }}"><i class="fas fa-user-md"></i> Provider Signup</a>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </footer>
 </body>

@@ -3,30 +3,22 @@
 {% block content %}
 <div class="auth-container">
     <div class="auth-card">
-        <h2>Provider Login</h2>
+        <h2>Admin/Provider Login</h2>
         <p>Access for verified service providers and administrators only.</p>
-        
+
         <form method="POST" action="{{ url_for('login') }}">
-            {{ form.hidden_tag() }}
-            
             <div class="form-group">
-                {{ form.username.label }}
-                {{ form.username(class="form-control") }}
-                {% for error in form.username.errors %}
-                    <span class="error-message">{{ error }}</span>
-                {% endfor %}
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" class="form-control" required>
             </div>
 
             <div class="form-group">
-                {{ form.password.label }}
-                {{ form.password(class="form-control") }}
-                {% for error in form.password.errors %}
-                    <span class="error-message">{{ error }}</span>
-                {% endfor %}
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" required>
             </div>
 
             <div class="form-actions">
-                {{ form.submit(class="btn btn-primary btn-block") }}
+                <button type="submit" class="btn btn-primary btn-block">Login</button>
             </div>
         </form>
     </div>

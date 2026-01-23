@@ -1,20 +1,468 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="dashboard-container">
-    <div class="dashboard-header">
-        <h2>Provider Dashboard</h2>
-        <p>Welcome, {{ current_user.username }}</p>
-        {% if current_user.organization %}
-            <p class="org-name">{{ current_user.organization.name }}</p>
-        {% endif %}
+<div class="provider-dashboard">
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="profile-info">
+            <div class="profile-avatar">
+                {% if current_user.organization and current_user.organization.logo %}
+                    <img src="{{ url_for('static', filename='uploads/' + current_user.organization.logo) }}" alt="Organization Logo">
+                {% else %}
+                    <i class="fas fa-building"></i>
+                {% endif %}
+                <button class="avatar-edit" onclick="changeLogo()" title="Change Logo">
+                    <i class="fas fa-camera"></i>
+                </button>
+            </div>
+            <div class="profile-details">
+                <h1>{{ current_user.organization.name if current_user.organization else 'Organization Dashboard' }}</h1>
+                <p>{{ current_user.username }} • Service Provider</p>
+                <div class="profile-meta">
+                    <span><i class="fas fa-calendar"></i> Member since: {{ current_user.organization.created_date.strftime('%B %Y') if current_user.organization else 'N/A' }}</span>
+                    <span><i class="fas fa-map-marker-alt"></i> {{ current_user.organization.address if current_user.organization else 'Location not set' }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="profile-actions">
+            <button class="btn btn-outline" onclick="editProfile()">
+                <i class="fas fa-edit"></i> Edit Profile
+            </button>
+            <button class="btn btn-outline" onclick="viewPublicProfile()">
+                <i class="fas fa-eye"></i> Public View
+            </button>
+        </div>
     </div>
 
-    <div class="dashboard-section">
-        <div class="alert alert-info">
-            <h4>Provider Portal</h4>
-            <p>This is a simplified view for the MVP. In the full system, you would see assigned cases and be able to update their status here.</p>
+    <!-- Statistics Overview -->
+    <div class="stats-overview">
+        <div class="stat-card primary">
+            <div class="stat-icon">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ assigned_reports|length }}</h3>
+                <p>Assigned Cases</p>
+                <span class="stat-change positive">Active workload</span>
+            </div>
+        </div>
+        <div class="stat-card warning">
+            <div class="stat-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ pending_reports|length }}</h3>
+                <p>Pending Actions</p>
+                <span class="stat-change neutral">Requires attention</span>
+            </div>
+        </div>
+        <div class="stat-card success">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ resolved_reports|length }}</h3>
+                <p>Resolved Cases</p>
+                <span class="stat-change positive">This month</span>
+            </div>
+        </div>
+        <div class="stat-card info">
+            <div class="stat-icon">
+                <i class="fas fa-hand-holding-heart"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ total_aid_requests }}</h3>
+                <p>Aid Requests</p>
+                <span class="stat-change neutral">Total handled</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Organization Profile Card -->
+    <div class="profile-card-section">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3><i class="fas fa-building"></i> Organization Information</h3>
+                <button class="btn btn-sm btn-outline" onclick="editOrganization()">
+                    <i class="fas fa-edit"></i> Edit Info
+                </button>
+            </div>
+            <div class="card-content">
+                <div class="org-info-grid">
+                    <div class="info-item">
+                        <label><i class="fas fa-tag"></i> Organization Name</label>
+                        <p>{{ current_user.organization.name if current_user.organization else 'Not set' }}</p>
+                    </div>
+                    <div class="info-item">
+                        <label><i class="fas fa-cogs"></i> Service Category</label>
+                        <p>{{ current_user.organization.category if current_user.organization else 'Not set' }}</p>
+                    </div>
+                    <div class="info-item">
+                        <label><i class="fas fa-envelope"></i> Email Address</label>
+                        <p>{{ current_user.organization.contact_email if current_user.organization else 'Not set' }}</p>
+                    </div>
+                    <div class="info-item">
+                        <label><i class="fas fa-phone"></i> Phone Number</label>
+                        <p>{{ current_user.organization.contact_phone if current_user.organization else 'Not set' }}</p>
+                    </div>
+                    <div class="info-item full-width">
+                        <label><i class="fas fa-map-marker-alt"></i> Address</label>
+                        <p>{{ current_user.organization.address if current_user.organization else 'Not set' }}</p>
+                    </div>
+                    <div class="info-item full-width">
+                        <label><i class="fas fa-info-circle"></i> Description</label>
+                        <p>{{ current_user.organization.description if current_user.organization else 'No description provided' }}</p>
+                    </div>
+                    <div class="info-item">
+                        <label><i class="fas fa-check-circle"></i> Verification Status</label>
+                        <p>
+                            <span class="status-badge status-{{ 'verified' if current_user.organization and current_user.organization.is_verified else 'pending' }}">
+                                {{ 'Verified' if current_user.organization and current_user.organization.is_verified else 'Pending Verification' }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="dashboard-grid">
+        <!-- Assigned Cases -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3><i class="fas fa-clipboard-list"></i> Assigned Cases</h3>
+                <div class="card-filters">
+                    <select id="statusFilter" onchange="filterCases()">
+                        <option value="all">All Status</option>
+                        <option value="Assigned">Assigned</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Resolved">Resolved</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="cases-list">
+                    {% for report in assigned_reports %}
+                    <div class="case-item" data-status="{{ report.status }}">
+                        <div class="case-header">
+                            <div class="case-id">{{ report.tracking_id }}</div>
+                            <div class="case-status">
+                                <span class="status-badge status-{{ report.status|lower }}">{{ report.status }}</span>
+                            </div>
+                        </div>
+                        <div class="case-details">
+                            <div class="case-info">
+                                <span class="category"><i class="fas fa-tag"></i> {{ report.category }}</span>
+                                <span class="location"><i class="fas fa-map-marker-alt"></i> {{ report.location }}</span>
+                                <span class="date"><i class="fas fa-calendar"></i> {{ report.incident_date.strftime('%b %d, %Y') }}</span>
+                            </div>
+                            <div class="case-description">
+                                <p>{{ report.description[:100] }}...</p>
+                            </div>
+                        </div>
+                        <div class="case-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewCaseDetails('{{ report.id }}')" title="View Full Details">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            {% if report.status == 'Assigned' %}
+                            <button class="btn btn-sm btn-success" onclick="updateStatus('{{ report.id }}', 'In Progress')" title="Start Working">
+                                <i class="fas fa-play"></i> Start
+                            </button>
+                            {% elif report.status == 'In Progress' %}
+                            <button class="btn btn-sm btn-primary" onclick="updateStatus('{{ report.id }}', 'Resolved')" title="Mark as Resolved">
+                                <i class="fas fa-check"></i> Resolve
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Aid Requests Management -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3><i class="fas fa-hand-holding-heart"></i> Aid Requests</h3>
+                <button class="btn btn-sm btn-outline" onclick="viewAllAidRequests()">
+                    <i class="fas fa-eye"></i> View All
+                </button>
+            </div>
+            <div class="card-content">
+                <div class="aid-requests-list">
+                    {% for aid in aid_requests %}
+                    <div class="aid-item">
+                        <div class="aid-header">
+                            <div class="aid-type">{{ aid.aid_type }}</div>
+                            <div class="aid-status">
+                                <span class="status-badge status-{{ aid.status|lower }}">{{ aid.status }}</span>
+                            </div>
+                        </div>
+                        <div class="aid-details">
+                            <div class="aid-report">Report: {{ aid.report.tracking_id }}</div>
+                            {% if aid.amount %}
+                            <div class="aid-amount">Amount: ₦{{ "{:,.0f}".format(aid.amount) }}</div>
+                            {% endif %}
+                            <div class="aid-description">{{ aid.description[:80] }}...</div>
+                        </div>
+                        <div class="aid-actions">
+                            {% if aid.status == 'Pending' %}
+                            <button class="btn btn-sm btn-success" onclick="approveAid('{{ aid.id }}')" title="Approve Request">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="rejectAid('{{ aid.id }}')" title="Reject Request">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                            {% endif %}
+                            <button class="btn btn-sm btn-info" onclick="viewAidDetails('{{ aid.id }}')" title="View Details">
+                                <i class="fas fa-eye"></i> Details
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Analytics -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3><i class="fas fa-chart-line"></i> Performance Analytics</h3>
+                <select class="time-filter">
+                    <option>Last 30 days</option>
+                    <option>Last 3 months</option>
+                    <option>Last 6 months</option>
+                </select>
+            </div>
+            <div class="card-content">
+                <div class="analytics-grid">
+                    <div class="analytics-item">
+                        <div class="analytics-icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <div class="analytics-content">
+                            <h4>Average Response Time</h4>
+                            <p>4.2 hours</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 78%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="analytics-item">
+                        <div class="analytics-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="analytics-content">
+                            <h4>Client Satisfaction</h4>
+                            <p>4.6/5 rating</p>
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="analytics-item">
+                        <div class="analytics-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <div class="analytics-content">
+                            <h4>Case Resolution Rate</h4>
+                            <p>92% success</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 92%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Notifications -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3><i class="fas fa-bell"></i> Notifications & Actions</h3>
+            </div>
+            <div class="card-content">
+                <div class="notifications-list">
+                    <div class="notification-item urgent">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div class="notification-content">
+                            <p>New case assigned: DV-2024-001</p>
+                            <small>2 hours ago</small>
+                        </div>
+                    </div>
+                    <div class="notification-item info">
+                        <i class="fas fa-info-circle"></i>
+                        <div class="notification-content">
+                            <p>Monthly report due in 3 days</p>
+                            <small>1 day ago</small>
+                        </div>
+                    </div>
+                    <div class="notification-item success">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="notification-content">
+                            <p>Case SA-2024-015 successfully resolved</p>
+                            <small>3 days ago</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="generateMonthlyReport()">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Monthly Report</span>
+                    </button>
+                    <button class="action-btn" onclick="updateAvailability()">
+                        <i class="fas fa-toggle-on"></i>
+                        <span>Update Status</span>
+                    </button>
+                    <button class="action-btn" onclick="contactSupport()">
+                        <i class="fas fa-headset"></i>
+                        <span>Support</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+function updateStatus(reportId, status) {
+    if (confirm(`Are you sure you want to update this case to ${status}?`)) {
+        fetch(`/provider/update_case/${reportId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: status })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error updating case status');
+            }
+        });
+    }
+}
+
+function approveAid(aidId) {
+    if (confirm('Approve this aid request?')) {
+        fetch(`/provider/approve_aid/${aidId}`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+}
+
+function rejectAid(aidId) {
+    const reason = prompt('Reason for rejection:');
+    if (reason) {
+        fetch(`/provider/reject_aid/${aidId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reason: reason })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+}
+
+function viewCaseDetails(reportId) {
+    window.open(`/provider/case_details/${reportId}`, '_blank');
+}
+
+function viewAidDetails(aidId) {
+    window.open(`/provider/aid_details/${aidId}`, '_blank');
+}
+
+function filterCases() {
+    const filter = document.getElementById('statusFilter').value;
+    const cases = document.querySelectorAll('.case-item');
+
+    cases.forEach(caseItem => {
+        if (filter === 'all' || caseItem.dataset.status === filter) {
+            caseItem.style.display = 'block';
+        } else {
+            caseItem.style.display = 'none';
+        }
+    });
+}
+
+function editProfile() {
+    window.open('/provider/edit_profile', '_blank');
+}
+
+function editOrganization() {
+    window.open('/provider/edit_organization', '_blank');
+}
+
+function changeLogo() {
+    // Trigger file upload for logo
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            uploadLogo(file);
+        }
+    };
+    input.click();
+}
+
+function uploadLogo(file) {
+    const formData = new FormData();
+    formData.append('logo', file);
+
+    fetch('/provider/upload_logo', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error uploading logo');
+        }
+    });
+}
+
+function viewPublicProfile() {
+    window.open('/directory', '_blank');
+}
+
+function viewAllAidRequests() {
+    window.open('/provider/aid_requests', '_blank');
+}
+
+function generateMonthlyReport() {
+    window.open('/provider/monthly_report', '_blank');
+}
+
+function updateAvailability() {
+    const status = confirm('Set yourself as available for new cases?') ? 'available' : 'unavailable';
+    fetch('/provider/update_availability', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: status })
+    })
+    .then(response => response.json())
+    .then(data => alert(data.message));
+}
+
+function contactSupport() {
+    window.open('/provider/support', '_blank');
+}
+</script>
 {% endblock %}

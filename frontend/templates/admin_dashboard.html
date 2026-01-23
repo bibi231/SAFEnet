@@ -1,85 +1,347 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="dashboard-container">
-    <div class="dashboard-header">
-        <h2>Admin Dashboard</h2>
-        <p>Welcome, {{ current_user.username }}</p>
-    </div>
-
-    <div class="dashboard-section">
-        <h3>Recent Incident Reports</h3>
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Category</th>
-                        <th>Location</th>
-                        <th>Status</th>
-                        <th>Tracking ID</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for report in reports %}
-                    <tr>
-                        <td>{{ report.incident_date.strftime('%Y-%m-%d') }}</td>
-                        <td>{{ report.category }}</td>
-                        <td>{{ report.location }}</td>
-                        <td><span class="status-badge status-{{ report.status|lower }}">{{ report.status }}</span></td>
-                        <td><span class="tracking-id">{{ report.tracking_id }}</span></td>
-                        <td>
-                            {% if report.status == 'Pending' %}
-                            <form method="POST" action="{{ url_for('assign_report', report_id=report.id) }}" class="d-inline">
-                                <select name="provider_id" class="form-select form-select-sm" required>
-                                    <option value="">Assign to Provider</option>
-                                    {% for provider in providers %}
-                                        {% if provider.is_verified %}
-                                        <option value="{{ provider.id }}">{{ provider.name }}</option>
-                                        {% endif %}
-                                    {% endfor %}
-                                </select>
-                                <button type="submit" class="btn btn-sm btn-primary">Assign</button>
-                            </form>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+<div class="admin-dashboard">
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="profile-info">
+            <div class="profile-avatar">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="profile-details">
+                <h1>Administrator Dashboard</h1>
+                <p>Welcome back, {{ current_user.username }}</p>
+                <div class="profile-meta">
+                    <span><i class="fas fa-calendar"></i> Last login: Today</span>
+                    <span><i class="fas fa-clock"></i> System Status: Online</span>
+                </div>
+            </div>
+        </div>
+        <div class="profile-actions">
+            <button class="btn btn-outline" onclick="exportData()">
+                <i class="fas fa-download"></i> Export Data
+            </button>
+            <button class="btn btn-outline" onclick="systemSettings()">
+                <i class="fas fa-cog"></i> Settings
+            </button>
         </div>
     </div>
 
-    <div class="dashboard-section">
-        <h3>Registered Service Providers</h3>
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Contact</th>
-                        <th>Verified</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for provider in providers %}
-                    <tr>
-                        <td>{{ provider.name }}</td>
-                        <td>{{ provider.category }}</td>
-                        <td>{{ provider.contact_email }}</td>
-                        <td>
-                            {% if provider.is_verified %}
-                                <span class="status-badge status-verified">Verified</span>
-                            {% else %}
-                                <span class="status-badge status-pending">Pending</span>
+    <!-- Statistics Overview -->
+    <div class="stats-overview">
+        <div class="stat-card primary">
+            <div class="stat-icon">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ total_reports }}</h3>
+                <p>Total Reports</p>
+                <span class="stat-change positive">+12% this month</span>
+            </div>
+        </div>
+        <div class="stat-card warning">
+            <div class="stat-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ pending_reports }}</h3>
+                <p>Pending Reports</p>
+                <span class="stat-change negative">Requires attention</span>
+            </div>
+        </div>
+        <div class="stat-card success">
+            <div class="stat-icon">
+                <i class="fas fa-building"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ verified_providers }}</h3>
+                <p>Verified Providers</p>
+                <span class="stat-change positive">+3 this week</span>
+            </div>
+        </div>
+        <div class="stat-card info">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ providers|length }}</h3>
+                <p>Total Providers</p>
+                <span class="stat-change neutral">Stable</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+        <div class="chart-container">
+            <h3><i class="fas fa-chart-line"></i> Reports by Category</h3>
+            <div class="chart-placeholder">
+                <div class="chart-bar" style="height: 80%">Domestic Violence</div>
+                <div class="chart-bar" style="height: 60%">Sexual Assault</div>
+                <div class="chart-bar" style="height: 40%">Harassment</div>
+                <div class="chart-bar" style="height: 30%">Child Abuse</div>
+                <div class="chart-bar" style="height: 20%">Other</div>
+            </div>
+        </div>
+        <div class="chart-container">
+            <h3><i class="fas fa-calendar-alt"></i> Monthly Trends</h3>
+            <div class="chart-placeholder">
+                <canvas id="monthlyChart" width="300" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="dashboard-grid">
+        <!-- Recent Reports -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3><i class="fas fa-clipboard-list"></i> Recent Reports</h3>
+                <button class="btn btn-sm btn-outline" onclick="viewAllReports()">
+                    <i class="fas fa-eye"></i> View All
+                </button>
+            </div>
+            <div class="card-content">
+                <div class="reports-list">
+                    {% for report in reports %}
+                    <div class="report-item">
+                        <div class="report-info">
+                            <div class="report-id">{{ report.tracking_id }}</div>
+                            <div class="report-details">
+                                <span class="category">{{ report.category }}</span>
+                                <span class="location">{{ report.location }}</span>
+                            </div>
+                        </div>
+                        <div class="report-status">
+                            <span class="status-badge status-{{ report.status|lower }}">{{ report.status }}</span>
+                            <div class="report-date">{{ report.submission_date.strftime('%b %d') }}</div>
+                        </div>
+                        <div class="report-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewReport('{{ report.id }}')" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            {% if report.status == 'Pending' %}
+                            <button class="btn btn-sm btn-success" onclick="assignReport('{{ report.id }}')" title="Assign Provider">
+                                <i class="fas fa-user-plus"></i>
+                            </button>
                             {% endif %}
-                        </td>
-                    </tr>
+                        </div>
+                    </div>
                     {% endfor %}
-                </tbody>
-            </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Providers Management -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3><i class="fas fa-building"></i> Service Providers</h3>
+                <button class="btn btn-sm btn-primary" onclick="addProvider()">
+                    <i class="fas fa-plus"></i> Add Provider
+                </button>
+            </div>
+            <div class="card-content">
+                <div class="providers-list">
+                    {% for provider in providers %}
+                    <div class="provider-item">
+                        <div class="provider-avatar">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="provider-info">
+                            <h4>{{ provider.name }}</h4>
+                            <p>{{ provider.category }} • {{ provider.contact_email }}</p>
+                            <div class="provider-status">
+                                <span class="status-badge status-{{ 'verified' if provider.is_verified else 'pending' }}">
+                                    {{ 'Verified' if provider.is_verified else 'Pending' }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="provider-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewProvider('{{ provider.id }}')" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            {% if not provider.is_verified %}
+                            <button class="btn btn-sm btn-success" onclick="verifyProvider('{{ provider.id }}')" title="Verify Provider">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            {% endif %}
+                            <button class="btn btn-sm btn-outline" onclick="editProvider('{{ provider.id }}')" title="Edit Provider">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- System Analytics -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3><i class="fas fa-chart-bar"></i> System Analytics</h3>
+                <select class="time-filter">
+                    <option>Last 7 days</option>
+                    <option>Last 30 days</option>
+                    <option>Last 3 months</option>
+                </select>
+            </div>
+            <div class="card-content">
+                <div class="analytics-grid">
+                    <div class="analytics-item">
+                        <div class="analytics-icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <div class="analytics-content">
+                            <h4>Response Time</h4>
+                            <p>Average: 2.3 hours</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 85%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="analytics-item">
+                        <div class="analytics-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="analytics-content">
+                            <h4>User Satisfaction</h4>
+                            <p>4.8/5 rating</p>
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="analytics-item">
+                        <div class="analytics-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="analytics-content">
+                            <h4>Security Score</h4>
+                            <p>99.9% secure</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 99%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+            </div>
+            <div class="card-content">
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="generateReport()">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Generate Report</span>
+                    </button>
+                    <button class="action-btn" onclick="sendNotification()">
+                        <i class="fas fa-bell"></i>
+                        <span>Send Notification</span>
+                    </button>
+                    <button class="action-btn" onclick="backupData()">
+                        <i class="fas fa-database"></i>
+                        <span>Backup Data</span>
+                    </button>
+                    <button class="action-btn" onclick="systemMaintenance()">
+                        <i class="fas fa-tools"></i>
+                        <span>Maintenance</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+// Chart.js would be used here for actual charts
+// For now, using placeholder visualizations
+
+function viewReport(reportId) {
+    window.open(`/admin/report_details/${reportId}`, '_blank');
+}
+
+function assignReport(reportId) {
+    // Create a modal or popup for provider selection
+    const providerId = prompt('Enter Provider ID to assign:');
+    if (providerId) {
+        fetch(`/admin/assign_report/${reportId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ provider_id: providerId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error assigning report');
+            }
+        });
+    }
+}
+
+function viewProvider(providerId) {
+    window.open(`/admin/provider_details/${providerId}`, '_blank');
+}
+
+function verifyProvider(providerId) {
+    if (confirm('Verify this service provider?')) {
+        fetch(`/admin/verify_provider/${providerId}`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+}
+
+function viewAllReports() {
+    window.open('/admin/reports', '_blank');
+}
+
+function addProvider() {
+    window.open('/admin/add_provider', '_blank');
+}
+
+function editProvider(providerId) {
+    window.open(`/admin/edit_provider/${providerId}`, '_blank');
+}
+
+function exportData() {
+    window.open('/admin/export_data', '_blank');
+}
+
+function systemSettings() {
+    window.open('/admin/settings', '_blank');
+}
+
+function generateReport() {
+    window.open('/admin/generate_report', '_blank');
+}
+
+function sendNotification() {
+    window.open('/admin/send_notification', '_blank');
+}
+
+function backupData() {
+    if (confirm('Start data backup?')) {
+        fetch('/admin/backup', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => alert(data.message));
+    }
+}
+
+function systemMaintenance() {
+    window.open('/admin/maintenance', '_blank');
+}
+</script>
 {% endblock %}

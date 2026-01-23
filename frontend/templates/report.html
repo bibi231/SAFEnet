@@ -4,44 +4,37 @@
 <div class="form-container">
     <h2>Submit Anonymous Report</h2>
     <p class="form-info">Your safety is our priority. This form does not collect your name, IP address, or any personal identifiers. Please provide as much detail as you feel safe sharing.</p>
-    
-    <form method="POST" action="{{ url_for('report_incident') }}">
-        {{ form.hidden_tag() }}
-        
+
+    <form method="POST" action="{{ url_for('report') }}">
         <div class="form-group">
-            {{ form.category.label }}
-            {{ form.category(class="form-control") }}
-            {% for error in form.category.errors %}
-                <span class="error-message">{{ error }}</span>
-            {% endfor %}
+            <label for="category">Category</label>
+            <select id="category" name="category" class="form-control" required>
+                <option value="">Select a category</option>
+                <option value="Domestic Violence">Domestic Violence</option>
+                <option value="Sexual Assault">Sexual Assault</option>
+                <option value="Child Abuse">Child Abuse</option>
+                <option value="Harassment">Harassment</option>
+                <option value="Other">Other</option>
+            </select>
         </div>
 
         <div class="form-group">
-            {{ form.location.label }}
-            {{ form.location(class="form-control", placeholder="e.g., Wuse 2, Gwarinpa, Maitama") }}
-            {% for error in form.location.errors %}
-                <span class="error-message">{{ error }}</span>
-            {% endfor %}
+            <label for="location">Location</label>
+            <input type="text" id="location" name="location" class="form-control" placeholder="e.g., Wuse 2, Gwarinpa, Maitama" required>
         </div>
 
         <div class="form-group">
-            {{ form.incident_date.label }}
-            {{ form.incident_date(class="form-control", type="date") }}
-            {% for error in form.incident_date.errors %}
-                <span class="error-message">{{ error }}</span>
-            {% endfor %}
+            <label for="incident_date">Incident Date</label>
+            <input type="date" id="incident_date" name="incident_date" class="form-control" required>
         </div>
 
         <div class="form-group">
-            {{ form.description.label }}
-            {{ form.description(class="form-control", rows="6", placeholder="Describe what happened...") }}
-            {% for error in form.description.errors %}
-                <span class="error-message">{{ error }}</span>
-            {% endfor %}
+            <label for="description">Description</label>
+            <textarea id="description" name="description" class="form-control" rows="6" placeholder="Describe what happened..." required></textarea>
         </div>
 
         <div class="form-actions">
-            {{ form.submit(class="btn btn-primary btn-block") }}
+            <button type="submit" class="btn btn-primary btn-block">Submit Report</button>
         </div>
     </form>
 </div>
