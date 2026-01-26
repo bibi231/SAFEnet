@@ -80,6 +80,7 @@ temp/
 *.tmp
 
 # Backups and Archives
+archive/
 frontend_backup_new/
 safenet_redesigned/
 safenet_redesigned.tar.gz
